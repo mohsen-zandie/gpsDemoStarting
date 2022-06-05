@@ -2,6 +2,8 @@ package com.komozan.gpstracker
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -106,10 +108,34 @@ class MainActivity : AppCompatActivity() {
                 tvSpeed.text = getString(R.string.not_available)
             }
         }
+        val geocoder  = Geocoder(MainActivity@this)
+        try {
+             val addresses: List<Address> = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+            binding?.tvAddress?.text = addresses[0].getAddressLine(0)
+        }catch (e:Exception){
+            binding?.tvAddress?.text = "Unable to get address"
+        }
     }
 
     private fun startLocationUpdates() {
         binding?.tvUpdates?.text = getString(R.string.tracking_location)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         fusedLocationProviderClient.requestLocationUpdates(
             locationRequest,
             getLocationCallBack(),
