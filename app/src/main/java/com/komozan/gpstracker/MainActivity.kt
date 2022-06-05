@@ -4,13 +4,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Looper
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.komozan.gpstracker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -46,6 +45,14 @@ class MainActivity : AppCompatActivity() {
                     tvSensor.text = getString(R.string.using_tower_wifi)
                 }
             }
+
+            swLocationsupdates.setOnClickListener {
+                if (swLocationsupdates.isChecked) {
+                    startLocationUpdates()
+                } else {
+                    stopLocationUpdates()
+                }
+            }
         }
     }
 
@@ -60,8 +67,6 @@ class MainActivity : AppCompatActivity() {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(MainActivity@ this)
         getPermission()
-//        getCurrentLocation()
-//        updateUi(0)
     }
 
     private fun getPermission() {
@@ -101,6 +106,36 @@ class MainActivity : AppCompatActivity() {
                 tvSpeed.text = getString(R.string.not_available)
             }
         }
+    }
+
+    private fun startLocationUpdates() {
+        binding?.tvUpdates?.text = getString(R.string.tracking_location)
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            getLocationCallBack(),
+            Looper.myLooper()!!
+        )
+    }
+
+    private fun getLocationCallBack() = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            super.onLocationResult(locationResult)
+            updateUIValues(locationResult.lastLocation)
+        }
+    }
+
+    private fun stopLocationUpdates() {
+        binding?.apply {
+            tvUpdates.text = getString(R.string.not_tracking_location)
+            tvLat.text = getString(R.string.not_tracking_location)
+            tvLon.text = getString(R.string.not_tracking_location)
+            tvSpeed.text = getString(R.string.not_tracking_location)
+            tvAddress.text = getString(R.string.not_tracking_location)
+            tvAccuracy.text = getString(R.string.not_tracking_location)
+            tvAltitude.text = getString(R.string.not_tracking_location)
+            tvSensor.text = getString(R.string.not_tracking_location)
+        }
+        fusedLocationProviderClient.removeLocationUpdates(getLocationCallBack())
     }
 
     override fun onRequestPermissionsResult(

@@ -3,4 +3,6 @@
     <string name="using_gps_sensor">Using GPS Sensor</string>
     <string name="using_tower_wifi">Using Towers + WiFi</string>
     <string name="not_available">Not Available</string>
+    <string name="tracking_location">Location is being tracked</string>
+    <string name="not_tracking_location">Location is not being tracked</string>
 </resources>
