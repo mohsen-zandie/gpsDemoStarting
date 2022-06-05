@@ -3,6 +3,7 @@ package com.komozan.gpstracker
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -43,6 +44,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -50,10 +52,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val sydney = LatLng(-34.0, 151.0)
 //        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-
+        var lastLocationPlaced : LatLng = sydney
         for(location in savedLocations){
             val latLng = LatLng(location.latitude, location.longitude)
             mMap.addMarker(MarkerOptions().position(latLng).title("title"))
+            lastLocationPlaced = latLng
         }
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLocationPlaced, 15f))
+
+        mMap.setOnMarkerClickListener { marker ->
+            var clicks : Int? = (marker.tag as Int?)
+            if(clicks == null){
+                clicks = 0
+            }
+            clicks++
+            marker.tag = clicks
+
+            Toast.makeText(this, "Marker ${marker.title} was clicked $clicks ", Toast.LENGTH_LONG).show()
+            false
+        }
+
+
     }
 }
