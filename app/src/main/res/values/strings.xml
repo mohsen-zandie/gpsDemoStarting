@@ -5,4 +5,5 @@
     <string name="not_available">Not Available</string>
     <string name="tracking_location">Location is being tracked</string>
     <string name="not_tracking_location">Location is not being tracked</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

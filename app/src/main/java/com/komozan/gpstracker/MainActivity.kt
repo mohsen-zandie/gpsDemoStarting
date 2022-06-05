@@ -1,6 +1,7 @@
 package com.komozan.gpstracker
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -70,6 +71,11 @@ class MainActivity : AppCompatActivity() {
 
             btnShowWayPointList.setOnClickListener {
                 Log.d("KoMoZan", "initViews: ${(application as MyApplication).getMyLocations()}")
+            }
+
+            btnShowMap.setOnClickListener {
+                val intent = Intent(this@MainActivity, MapsActivity::class.java)
+                startActivity(intent)
             }
         }
     }
