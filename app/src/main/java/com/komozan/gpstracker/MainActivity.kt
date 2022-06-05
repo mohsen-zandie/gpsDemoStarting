@@ -8,6 +8,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -22,6 +23,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
+
+    private lateinit var currentLocation : Location
+    private var savedLocations = ArrayList<Location>()
 
     private val DEFAULT_UPDATE_INTERVAL = 30L
     private val FAST_UPDATE_INTERVAL = 30L
@@ -55,6 +59,18 @@ class MainActivity : AppCompatActivity() {
                     stopLocationUpdates()
                 }
             }
+
+            btnNewWayPoints.setOnClickListener {
+                savedLocations.clear()
+                savedLocations.addAll((application as MyApplication).getMyLocations())
+                savedLocations.add(currentLocation)
+                (application as MyApplication).setMyLocations(savedLocations)
+                binding?.tvWaypoints?.text = savedLocations.size.toString()
+            }
+
+            btnShowWayPointList.setOnClickListener {
+                Log.d("KoMoZan", "initViews: ${(application as MyApplication).getMyLocations()}")
+            }
         }
     }
 
@@ -78,6 +94,7 @@ class MainActivity : AppCompatActivity() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+                currentLocation = location
                 updateUIValues(location)
             }
         } else {
@@ -115,6 +132,12 @@ class MainActivity : AppCompatActivity() {
         }catch (e:Exception){
             binding?.tvAddress?.text = "Unable to get address"
         }
+
+        savedLocations.clear()
+        savedLocations.addAll((application as MyApplication).getMyLocations())
+        savedLocations.add(currentLocation)
+        (application as MyApplication).setMyLocations(savedLocations)
+        binding?.tvWaypoints?.text = savedLocations.size.toString()
     }
 
     private fun startLocationUpdates() {
